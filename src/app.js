@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
 const SignServices = require('./sign-services');
 const bodyParser = express.json();
+const xss = require('xss');
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.get('/sign', (req, res, next) => {
 
 app.post('/sign', bodyParser, (req,res,next) => {
   let signature = req.body;
-  let postIt = {name: signature.name, message: signature.message};
+  let postIt = {name: xss(signature.name), message: xss(signature.message)};
   console.log(postIt);
   SignServices.signCard(req.app.get('db'),postIt)
     .then(response => {
